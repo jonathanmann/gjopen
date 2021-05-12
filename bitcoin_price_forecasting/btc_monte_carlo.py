@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import pandas as pd
 import random
+import datetime
 
-BTC_PRICE = 54160.00
-REMAINING_DAYS = 50
+EXPIRATION = datetime.date(2021,7,1)
+CURR_PRICE =  54585.40
+REMAINING_DAYS = (EXPIRATION - datetime.date.today()).days
 TRIALS = 10000
 CURR_PRICE_WEIGHT = .2 # Bias toward today's prices
 SIMULATED_PRICE_WEIGHT = 1 - CURR_PRICE_WEIGHT
@@ -19,9 +21,9 @@ shifts = set((df.Close/df.Previous).apply(lambda x: x - 1)) # Make a set of hist
 low = 0 
 high = 0
 for j in range(TRIALS):
-    price = BTC_PRICE
+    price = CURR_PRICE
     for i in range(REMAINING_DAYS):
-        move = sample(shifts) * (CURR_PRICE_WEIGHT * BTC_PRICE + SIMULATED_PRICE_WEIGHT * price) * u()
+        move = sample(shifts) * (CURR_PRICE_WEIGHT * CURR_PRICE + SIMULATED_PRICE_WEIGHT * price) * u()
         price = price  + move
         if price < 25000:
             low += 1
