@@ -2,28 +2,26 @@
 import pandas as pd
 import random
 
-BTC_PRICE = 55838.80
-REMAINING_DAYS = 51
-OBSERVATIONS = 10000
+BTC_PRICE = 54160.00
+REMAINING_DAYS = 50
+TRIALS = 10000
+CURR_PRICE_WEIGHT = .2 # Bias toward today's prices
+SIMULATED_PRICE_WEIGHT = 1 - CURR_PRICE_WEIGHT
 
-btc = pd.read_csv("BTC-USD.csv")
-btc.dropna(inplace=True)
+u = lambda: [-1,1,1][random.randrange(3)] # 1 / 3 chance of flipping the sign
+sample = lambda data: random.sample(data,1)[0] # Pull a random sample from a set
 
-btc["Previous"] = btc.Close.shift()
-btc.dropna(inplace=True)
-btc = btc[["Date","Close","Previous"]]
-btc["Move"] = (btc.Close/btc.Previous) 
-shifts = set(btc.Move)
+df = pd.read_csv("BTC-USD.csv")
+df["Previous"] = df.Close.shift()
+df.dropna(inplace=True)
+shifts = set((df.Close/df.Previous).apply(lambda x: x - 1)) # Make a set of historical price shifts
 
 low = 0 
 high = 0
-for j in range(OBSERVATIONS):
+for j in range(TRIALS):
     price = BTC_PRICE
     for i in range(REMAINING_DAYS):
-        shift = random.sample(shifts,1)[0] - 1
-        move = .5 * shift * BTC_PRICE + .5 * shift * price 
-        if (random.randrange(0,1) == 1):
-            move = move * (-1)
+        move = sample(shifts) * (CURR_PRICE_WEIGHT * BTC_PRICE + SIMULATED_PRICE_WEIGHT * price) * u()
         price = price  + move
         if price < 25000:
             low += 1
@@ -32,5 +30,6 @@ for j in range(OBSERVATIONS):
             high += 1
             break
 
-print("LOW:{}%,HIGH:{}%".format(low * 100  / OBSERVATIONS ,high * 100 / OBSERVATIONS))
+inputs = [x * 100 / TRIALS for x in [low,high]]
+print("LOW:{}%,HIGH:{}%".format(*inputs))
 
