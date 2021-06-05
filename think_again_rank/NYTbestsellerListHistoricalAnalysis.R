@@ -13,10 +13,10 @@ wasTitleInPreviousWeek = function(title, week){
 
 titlesInListAlready <- c()
 submarineTitles <- c()
-doubleSubmarineTitles <- c()
+rollercoasterTitles <- c()
 counterTotalPositions <- 0
 counterSubmarines <- 0
-counterDoubleSubmarines <- 0
+counterRollerCoasters <- 0
 
 for(week in weeks){
   print(week)
@@ -24,13 +24,13 @@ for(week in weeks){
   for(title in titles){
     if(title %in% titlesInListAlready && !wasTitleInPreviousWeek(title, week)){
       if(title %in% submarineTitles){
-        print("DOUBLE SUBMARINE")
+        print("ROLLERCOASTER")
         print(title)
-        doubleSubmarineTitles <- c(doubleSubmarineTitles, title)
+        rollercoasterTitles <- c(rollercoasterTitles, title)
         submarineTitles <- submarineTitles[submarineTitles!=title]
-        counterDoubleSubmarines <- counterDoubleSubmarines + 1
+        counterRollerCoasters <- counterRollerCoasters + 1
       }
-      if(!(title %in% submarineTitles) && !(title %in% doubleSubmarineTitles)){
+      if(!(title %in% submarineTitles) && !(title %in% rollercoasterTitles)){
         print("SUBMARINE")
         print(title)
         submarineTitles <- c(submarineTitles, title)
@@ -45,7 +45,7 @@ for(week in weeks){
 
 counterTotalPositions
 counterSubmarines
-counterDoubleSubmarines
+counterRollerCoasters
 
-submarineTitles
-doubleSubmarineTitles
+submarineTitles 
+rollercoasterTitles
