@@ -4,7 +4,7 @@ import pandas as pd
 import datetime
 import seaborn as sns
 
-CURRENT_SALES_WEEK = '2021-06-13'
+CURRENT_SALES_WEEK = '2021-06-20'
 
 def get_dt_obj(str_dt):
     split_date = [int(x) for x in str_dt.split('-')]
