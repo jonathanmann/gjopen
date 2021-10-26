@@ -25,16 +25,23 @@ class Simulation:
         df.dropna(inplace=True)
         self.shifts = set((df.Close/df.Previous).apply(lambda x: x - 1)) # Make a set of historical price shifts
 
+    def random_flip(self,move):
+        if move == 0 or 1 == [-1,1,1][random.randrange(3)]: # 1 / 3 chance of flipping the sign
+            return move
+        return (1 / (1 + move) - 1)
+
+
     def run_trials(self,trials=10000,sudden_condition=False):
         sample = lambda data: random.sample(data,1)[0] # Pull a random sample from a set
-        random_flip = lambda: [-1,1,1][random.randrange(3)] # 1 / 3 chance of flipping the sign
+        random_flip_x = lambda: [-1,1,1][random.randrange(3)] # 1 / 3 chance of flipping the sign
         low = 0 
         high = 0
         for j in range(trials):
             price = self.current_price
             for i in range(self.remaining_days):
-                move = sample(self.shifts) * (self.current_price_weight * self.current_price + self.simulated_price_weight * price) * random_flip()
-                price = price  + move
+                move = self.random_flip(sample(self.shifts)) * (self.current_price_weight * self.current_price + self.simulated_price_weight * price) #* random_flip_x()
+                #move = sample(self.shifts) * (self.current_price_weight * self.current_price + self.simulated_price_weight * price) * random_flip_x()
+                price = price + move
                 if sudden_condition:
                     if price < self.lower_bound:
                         low += 1
@@ -53,5 +60,5 @@ class Simulation:
 
 
 if __name__ == '__main__':
-    s = Simulation('BTC-USD','2021-07-02',25000,100000)
+    s = Simulation('BTC-USD','2022-01-01',25000,100000)
     s.run_trials()
