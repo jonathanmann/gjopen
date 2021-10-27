@@ -25,38 +25,36 @@ class Simulation:
         df.dropna(inplace=True)
         self.shifts = set((df.Close/df.Previous).apply(lambda x: x - 1)) # Make a set of historical price shifts
 
-    def random_flip(self,move):
-        if move == 0 or 1 == [-1,1,1][random.randrange(3)]: # 1 / 3 chance of flipping the sign
+    def random_flip(self,move,cx=1):
+        chance_array = [-1] + [1]*cx
+        if move == 0 or 1 == chance_array[random.randrange(cx + 1)]: # 1 / (cx + 1) chance of flipping the sign
             return move
         return (1 / (1 + move) - 1)
 
 
-    def run_trials(self,trials=10000,sudden_condition=False):
+    def run_trials(self,trials=10000,sudden_condition=None):
         sample = lambda data: random.sample(data,1)[0] # Pull a random sample from a set
-        random_flip_x = lambda: [-1,1,1][random.randrange(3)] # 1 / 3 chance of flipping the sign
         low = 0 
         high = 0
         for j in range(trials):
             price = self.current_price
             for i in range(self.remaining_days):
-                move = self.random_flip(sample(self.shifts)) * (self.current_price_weight * self.current_price + self.simulated_price_weight * price) #* random_flip_x()
-                #move = sample(self.shifts) * (self.current_price_weight * self.current_price + self.simulated_price_weight * price) * random_flip_x()
+                move = self.random_flip(sample(self.shifts)) * (self.current_price_weight * self.current_price + self.simulated_price_weight * price)
                 price = price + move
-                if sudden_condition:
+                if sudden_condition == 'low':
                     if price < self.lower_bound:
-                        low += 1
                         break
+                if sudden_condition == 'high':
                     if price > self.upper_bound:
-                        high += 1
                         break
-            if not sudden_condition:
-                if price < self.lower_bound:
-                    low += 1
-                if price > self.upper_bound:
-                    high += 1
+            if price < self.lower_bound:
+                low += 1
+            if price > self.upper_bound:
+                high += 1
 
         inputs = [x * 100 / trials for x in [low,high]]
         print("LOW:{}%,HIGH:{}%".format(*inputs))
+        return inputs
 
 
 if __name__ == '__main__':
