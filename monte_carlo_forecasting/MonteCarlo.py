@@ -32,7 +32,7 @@ class Simulation:
         return (1 / (1 + move) - 1)
 
 
-    def run_trials(self,trials=10000,sudden_condition=None):
+    def run_trials(self,trials=10000,sudden_condition=False):
         sample = lambda data: random.sample(data,1)[0] # Pull a random sample from a set
         low = 0 
         high = 0
@@ -41,10 +41,9 @@ class Simulation:
             for i in range(self.remaining_days):
                 move = self.random_flip(sample(self.shifts)) * (self.current_price_weight * self.current_price + self.simulated_price_weight * price)
                 price = price + move
-                if sudden_condition == 'low':
+                if sudden_condition:
                     if price < self.lower_bound:
                         break
-                if sudden_condition == 'high':
                     if price > self.upper_bound:
                         break
             if price < self.lower_bound:
