@@ -3,9 +3,9 @@ import pandas as pd
 import random
 import datetime
 
-AAPL_PRES = 2.490
-MSFT_PRES = 2.523 
-ARAM_PRES = 2.016
+AAPL_PRES = 2.474
+MSFT_PRES = 2.522 
+ARAM_PRES = 1.987
 
 
 expiration_date = '2021-12-31'
